@@ -132,6 +132,7 @@ const Dashboard = () => {
   };
 
   const clearRow = () => {
+    setdropDown(null)
     setRows(initialRows);
   };
 
