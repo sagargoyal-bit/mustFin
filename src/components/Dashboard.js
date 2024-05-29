@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
 import Navbar from "./Navbar";
 import DropDown from "./DropDown";
 import Button from "@mui/material/Button";
@@ -12,9 +12,6 @@ const Dashboard = () => {
   const ApprovalDropDown = ["Approved", "Rejected", "Waiting for approval"];
   const ChangeApprovalDropDown = ["Approved", "Rejected"];
   const DateTimeDropdown = ["today", "last week", "last month"];
-  const [dropdown, setdropDown] = useState(null);
-
-  // Initial rows state
   const initialRows = [
     {
       no: 1,
@@ -120,8 +117,9 @@ const Dashboard = () => {
     },
   ];
 
+  const [dropdown, setdropDown] = useState(null);
   const [rows, setRows] = useState(initialRows);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -129,21 +127,17 @@ const Dashboard = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setdropDown(null)
     setRows(initialRows);
   };
 
- 
-  useEffect(() => {
-    if (dropdown) {
-        const updated = initialRows.filter((val) => val.Approval === dropdown);
-        setRows(updated);
-      }
-    }, [dropdown,initialRows]);
-
-
-  function clearRow() {
+  const clearRow = () => {
     setRows(initialRows);
-  }
+  };
+
+  const rowData = useMemo(() => {
+    return dropdown ? rows.filter((val) => val.Approval === dropdown) : rows;
+  }, [dropdown, rows]);
 
   const tableHeader = [
     "checkbox",
@@ -171,10 +165,7 @@ const Dashboard = () => {
           </button>
           <DropDown options={ApprovalDropDown} setdropDown={setdropDown} />
           <DropDown options={DateTimeDropdown} setdropDown={setdropDown} />
-          <DropDown
-            options={ChangeApprovalDropDown}
-            setdropDown={setdropDown}
-          />
+          <DropDown options={ChangeApprovalDropDown} setdropDown={setdropDown} />
         </div>
       </div>
       <hr className="mt-2 mb-2" />
@@ -221,7 +212,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="relative overflow-x-auto">
-          <table className="w-full text-sm text-left rtl:text-right text-black  table:auto">
+          <table className="w-full text-sm text-left rtl:text-right text-black table-auto">
             <thead className="text-xs bg-[#EEF0F4] ">
               <tr>
                 {tableHeader.map((col, index) => (
@@ -232,8 +223,8 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
-                <tr key={row.id}>
+              {rowData.map((row) => (
+                <tr key={row.no}>
                   <td className="px-6 py-4">
                     <input type="checkbox" />
                   </td>
@@ -243,7 +234,7 @@ const Dashboard = () => {
                   <td className="px-6 py-4">{row.DocumentsNeeded}</td>
                   <td className="px-6 py-4">{row.ApplicationDateAndTime}</td>
                   <td className="px-6 py-4">{row.Approval}</td>
-                  <td className="px-6 py-4">{row?.Reason}</td>
+                  <td className="px-6 py-4">{row.Reason}</td>
                   <td className="px-6 py-4">{row["Approval date and time"]}</td>
                 </tr>
               ))}
