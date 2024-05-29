@@ -132,16 +132,15 @@ const Dashboard = () => {
     setRows(initialRows);
   };
 
+ 
   useEffect(() => {
     if (dropdown) {
-      updateRow();
-    }
-  }, [dropdown]);
+        const updated = initialRows.filter((val) => val.Approval === dropdown);
+        setRows(updated);
+      }
+    }, [dropdown,initialRows]);
 
-  function updateRow() {
-    const updated = initialRows.filter((val) => val.Approval === dropdown);
-    setRows(updated);
-  }
+
   function clearRow() {
     setRows(initialRows);
   }
